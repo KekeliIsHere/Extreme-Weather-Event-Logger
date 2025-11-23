@@ -18,18 +18,19 @@ public class WeatherManager{
     //Get events by location
     public ArrayList<Weather> getEventsByLocation(String location){
         ArrayList<Weather> eventsByLocation = new ArrayList<>();
-        for(Weather i: events){
-            if(i.getLocation().equals(location))
+
+        for (Weather i : events) {
+            if (i.getLocation().equals(location)) {
                 eventsByLocation.add(i);
+            }
         }
 
-        if (!eventsByLocation.isEmpty())
+        if (!eventsByLocation.isEmpty()) {
             return eventsByLocation;
-
-        else
+        } else {
             System.out.println("No events found with this location");
-
-
+            return new ArrayList<>(); // return an empty list
+        }
     }
 
 
@@ -37,20 +38,22 @@ public class WeatherManager{
     public ArrayList<Weather> getHighLightIntensityEvents(double threshold){
         ArrayList<Weather> highLightIntensityEvents = new ArrayList<>();
         for(Weather i: events){
-            if(i.getIntensity().equals(threshold))
+            if(i.getIntensity() ==threshold)
                 highLightIntensityEvents.add(i);
         }
 
         if (!highLightIntensityEvents.isEmpty())
             return highLightIntensityEvents;
 
-        else
+        else{
             System.out.println("No events found with this location");
+            return highLightIntensityEvents;
+        }
 
     }
 
     public void sortByDate(){
-        events.sort(Comparator.comparing(Weather::getDate).reversed());
+        events.sort(Comparator.comparing(Weather::getStartDateTime).reversed());
 
     }
 
@@ -60,10 +63,8 @@ public class WeatherManager{
     }
 
     public void sortByDuration(){
-        events.sort(Comparator.comparingDouble(Weather::getDuration));
+        events.sort(Comparator.comparingDouble(Weather::getDurationInHours));
 
     }
-
-
 
 }
