@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class WeatherManager{
     private ArrayList<Weather> events = new ArrayList<>();
@@ -49,14 +50,17 @@ public class WeatherManager{
     }
 
     public void sortByDate(){
+        events.sort(Comparator.comparing(Weather::getDate).reversed());
 
     }
 
     public void sortByLocation(){
+        events.sort(Comparator.comparing(Weather::getLocation));
 
     }
 
     public void sortByDuration(){
+        events.sort(Comparator.comparingDouble(Weather::getDuration));
 
     }
 
