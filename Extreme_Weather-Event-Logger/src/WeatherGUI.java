@@ -21,6 +21,7 @@ public class WeatherGUI extends JFrame implements ActionListener {
     public void showMainWindow(){
         super("Weather Event Manager");
         System.out.println("tbd");
+
     }
 
 
