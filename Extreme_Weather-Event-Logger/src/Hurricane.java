@@ -8,7 +8,7 @@ public class Hurricane extends Weather{
     
     public Hurricane(int eventId, String location, String date, int duration, double intensity, double windSpeed, int category, int size, double pressure, double stormSurge){
         super(eventId, location, date, duration, intensity);
-        this.eventType=EventType.HURRICANE;
+        this.eventType=eventType.HURRICANE;
         this.windSpeed = windSpeed;
         this.category = category;
         this.size = size;
