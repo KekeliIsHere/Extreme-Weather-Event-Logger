@@ -37,6 +37,14 @@ public class Weather {
         setCause(cause);
     }
 
+    public Weather(EventType eventType, String location, LocalDateTime startDateTime, double durationInHours, int intensity){
+        this.eventType = eventType;
+        this.location = location;
+        this.startDateTime = startDateTime;
+        this.durationInHours = durationInHours;
+        this.intensity = intensity;
+    }
+
 
 
 
