@@ -77,9 +77,17 @@ public class Earthquake extends Weather {
     // Override toString() to include Earthquake-specific info
     @Override
     public String toString() {
-        return super.toString()
-                + ", Depth = " + getDepth() + " km"
-                + ", Magnitude = " + getMagnitude() + "Risk level = " +getRiskLevel()
-                + ", Epicenter = '" + getEpicenter() + "'";
+        return "Earthquake{" +
+                "eventId='" + getEventId() + '\'' +
+                ", location='" + getLocation() + '\'' +
+                ", startDateTime=" + getStartDateTime() +
+                ", duration=" + getDurationInHours() + " hrs" +
+                ", intensity=" + getIntensity() +
+                ", magnitude=" + getMagnitude() +
+                ", depth=" + getDepth() + " km" +
+                ", epicenter='" + getEpicenter() + '\'' +
+                ", riskLevel=" + getRiskLevel() +
+                '}';
+
     }
 }
