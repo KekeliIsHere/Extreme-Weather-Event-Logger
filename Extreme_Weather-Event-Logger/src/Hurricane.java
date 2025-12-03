@@ -1,4 +1,5 @@
 public class Hurricane extends Weather{
+    private EventType eventType;
     private double windSpeed;
     private int category;
     private int size;
@@ -6,7 +7,8 @@ public class Hurricane extends Weather{
     
     
     public Hurricane(int eventId, String location, String date, int duration, double intensity, double windSpeed, int category, int size, double pressure, double stormSurge){
-        super(eventId, location, startDateTime, durationInHours, intensity);
+        super(eventId, location, date, duration, intensity);
+        this.eventType=eventType.HURRICANE;
         this.windSpeed = windSpeed;
         this.category = category;
         this.size = size;
@@ -28,5 +30,24 @@ public class Hurricane extends Weather{
     public double getPressure(){
         return pressure;
     }
-    
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public void setWindSpeed(double windSpeed) {
+        this.windSpeed = windSpeed;
+    }
+
+    public void setCategory(int category) {
+        this.category = category;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setPressure(double pressure) {
+        this.pressure = pressure;
+    }
 }
