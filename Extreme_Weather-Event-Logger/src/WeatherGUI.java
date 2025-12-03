@@ -107,10 +107,10 @@ public class WeatherGUI extends JFrame {
         for (Weather event : events) {
             Object[] row = {
                     event.getEventId(),
-                    event.getType(),      // or event.getClass().getSimpleName()
+                    event.getEventType(),      // or event.getClass().getSimpleName()
                     event.getLocation(),
-                    event.getDate(),
-                    event.getDuration(),
+                    event.getStartDateTime(),
+                    event.getDurationInHours(),
                     event.getIntensity()
             };
             tableModel.addRow(row);

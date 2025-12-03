@@ -2,7 +2,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Weather {
+public class Weather {
     private String eventId;
     private EventType eventType ;
     private String location;
@@ -36,6 +36,9 @@ public abstract class Weather {
         setDurationInHours(durationInHours);
         setCause(cause);
     }
+
+
+
 
     public String getEventId() {return eventId;}
 
