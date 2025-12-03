@@ -1,23 +1,44 @@
-public class Earthquake extends Weather{
-    private EventType eventType;
+import java.time.LocalDateTime;
+
+public class Earthquake extends Weather {
+
     private double magnitude;
     private double depth;
     private String epicenter;
 
+    // Constructor
+    public Earthquake(String location,
+                      LocalDateTime startDateTime,
+                      double durationInHours,
+                      int intensity,
+                      String cause,
+                      double depth,
+                      double magnitude,
+                      String epicenter) {
 
-    public Earthquake(int eventId, String location, String date, int duration, double intensity, double depth, double magnitude, String epicenter) {
-        super(eventId, location, date, duration, intensity);
-        this.eventType=EventType.EARTHQUAKE;
+
+        super(EventType.EARTHQUAKE,
+                location,
+                startDateTime,
+                durationInHours,
+                intensity,
+                cause);
+
+
         setDepth(depth);
         setMagnitude(magnitude);
         setEpicenter(epicenter);
     }
 
+    // Getters and setters with optional validation
     public double getDepth() {
         return depth;
     }
 
     public void setDepth(double depth) {
+        if (depth < 0) {
+            throw new IllegalArgumentException("Depth cannot be negative");
+        }
         this.depth = depth;
     }
 
@@ -26,6 +47,9 @@ public class Earthquake extends Weather{
     }
 
     public void setMagnitude(double magnitude) {
+        if (magnitude < 0) {
+            throw new IllegalArgumentException("Magnitude cannot be negative");
+        }
         this.magnitude = magnitude;
     }
 
@@ -35,5 +59,14 @@ public class Earthquake extends Weather{
 
     public void setEpicenter(String epicenter) {
         this.epicenter = epicenter;
+    }
+
+    // Override toString() to include Earthquake-specific info
+    @Override
+    public String toString() {
+        return super.toString()
+                + ", Depth = " + getDepth() + " km"
+                + ", Magnitude = " + getMagnitude()
+                + ", Epicenter = '" + getEpicenter() + "'";
     }
 }
