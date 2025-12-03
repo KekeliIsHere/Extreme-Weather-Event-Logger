@@ -29,6 +29,7 @@ public class Weather {
         this.eventType = eventType;                     // pass in and store the type
         this.eventId = generateEventId(eventType);     // auto-generate ID
         this.startDateTime = startDateTime;
+
         setIntensity(intensity);
         setLocation(location);
         setDurationInHours(durationInHours);
@@ -36,17 +37,11 @@ public class Weather {
     }
 
     public String getEventId() {return eventId;}
-
     public EventType getEventType() {return eventType;}
-
     public String getLocation() {return location;}
-
     public LocalDateTime getStartDateTime() {return startDateTime;}
-
     public double getDurationInHours() {return durationInHours;}
-
     public int getIntensity() {return intensity;}
-
     public String getCause() {return cause;}
 
     public LocalDateTime getEndDateTime() {
