@@ -31,9 +31,26 @@ public class Flood extends Weather {
         this.waterLevel = waterLevel;
     }
 
-    public String toString() {
-        return super.toString() + ", Water Level = " + getWaterLevel();
-    }
+    public String getRiskLevel(){
+            if (waterLevel >= 5.0) return "EXTREME";
+            else if (waterLevel >= 3.0) return "HIGH";
+            else if (waterLevel >= 1.0) return "MEDIUM";
+            else return "LOW";
+        }
 
-}
+        @Override
+            public String toString() {
+                return "Flood{" +
+                        "eventId='" + getEventId() + '\'' +
+                        ", location='" + getLocation() + '\'' +
+                        ", startDateTime=" + getStartDateTime() +
+                        ", duration=" + getDurationInHours() + " hrs" +
+                        ", waterLevel=" + getWaterLevel() + " m" +
+                        ", riskLevel=" + getRiskLevel() +
+                        '}';
+            }
+
+        }
+
+
 
