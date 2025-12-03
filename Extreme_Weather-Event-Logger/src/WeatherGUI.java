@@ -103,7 +103,6 @@ public class WeatherGUI extends JFrame {
     // ----------------- showEventList() from UML -----------------
     public void showEventList() {
         tableModel.setRowCount(0);  // clear table
-
         List<Weather> events = manager.getAllEvents();
         for (Weather event : events) {
             Object[] row = {
