@@ -1,5 +1,5 @@
 public class Flood extends Weather{
-    private final EventType eventType;
+    private EventType eventType;
     private double waterLevel;
 
     public Flood(int eventId, String location, String date, int duration, double intensity, double waterLevel){
