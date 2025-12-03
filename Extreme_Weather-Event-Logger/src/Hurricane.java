@@ -30,5 +30,24 @@ public class Hurricane extends Weather{
     public double getPressure(){
         return pressure;
     }
-    
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public void setWindSpeed(double windSpeed) {
+        this.windSpeed = windSpeed;
+    }
+
+    public void setCategory(int category) {
+        this.category = category;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setPressure(double pressure) {
+        this.pressure = pressure;
+    }
 }
