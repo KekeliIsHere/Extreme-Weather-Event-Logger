@@ -13,12 +13,12 @@ public class Weather {
 
     /* Static map to keep track of the number of events per type
     to Declare and initialize a HashMap
-     Map<KeyType, ValueType> map = new HashMap<>();
-     Hash Map work like Dictionaries in python.
-     so I used it here because I want to be able to generate the eventId
-     based on the weather type say if earthquake E001 or Flood F001
-     I also want to be able to keep track of how many of these events are occurring.
-     it could help in data analysis
+    Map<KeyType, ValueType> map = new HashMap<>();
+    Hash Map work like Dictionaries in python.
+    so I used it here because I want to be able to generate the eventId
+    based on the weather type say if earthquake E001 or Flood F001
+    I also want to be able to keep track of how many of these events are occurring.
+    it could help in data analysis
      */
 
     private static Map<EventType, Integer> typeCounters = new HashMap<>();
@@ -26,7 +26,7 @@ public class Weather {
     public Weather(){}
 
     public Weather(EventType eventType,String location, LocalDateTime startDateTime, double durationInHours,
-                   int  intensity, String cause ){
+                    int  intensity, String cause ){
 
         this.eventType = eventType;                     // pass in and store the type
         this.eventId = generateEventId(eventType);     // auto-generate ID
