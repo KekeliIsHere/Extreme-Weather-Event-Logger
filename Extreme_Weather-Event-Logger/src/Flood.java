@@ -45,6 +45,7 @@ public class Flood extends Weather {
                         ", location='" + getLocation() + '\'' +
                         ", startDateTime=" + getStartDateTime() +
                         ", duration=" + getDurationInHours() + " hrs" +
+                        ", Cause =" + getCause() +
                         ", waterLevel=" + getWaterLevel() + " m" +
                         ", riskLevel=" + getRiskLevel() +
                         '}';

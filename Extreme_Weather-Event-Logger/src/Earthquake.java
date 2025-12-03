@@ -82,6 +82,7 @@ public class Earthquake extends Weather {
                 ", location='" + getLocation() + '\'' +
                 ", startDateTime=" + getStartDateTime() +
                 ", duration=" + getDurationInHours() + " hrs" +
+                ", Cause=" + getCause() +
                 ", intensity=" + getIntensity() +
                 ", magnitude=" + getMagnitude() +
                 ", depth=" + getDepth() + " km" +
