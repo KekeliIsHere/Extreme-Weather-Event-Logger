@@ -23,7 +23,7 @@ public class Weather {
 
     private static Map<EventType, Integer> typeCounters = new HashMap<>();
 
-    public Weather(){}
+    public Weather(int eventId, String location, String date, int duration, double intensity){}
 
     public Weather(EventType eventType,String location, LocalDateTime startDateTime, double durationInHours,
                    int  intensity, String cause ){
@@ -37,7 +37,16 @@ public class Weather {
         setCause(cause);
     }
 
+    public Weather(EventType eventType,int eventId, String location, LocalDateTime date, int duration, double intensity) {
+                            // pass in and store the type
+        this.eventId = generateEventId(eventType);     // auto-generate ID
+        this.startDateTime =date;
+        setDurationInHours(duration);
+        setIntensity((int) intensity);
+        setLocation(location);
 
+
+    }
 
 
     public String getEventId() {return eventId;}
