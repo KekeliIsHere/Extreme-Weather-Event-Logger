@@ -61,12 +61,25 @@ public class Earthquake extends Weather {
         this.epicenter = epicenter;
     }
 
+    @Override
+    public String getRiskLevel() {
+        if (magnitude >= 7.0) {
+            return "EXTREME";
+        } else if (magnitude >= 5.0) {
+            return "HIGH";
+        } else if (magnitude >= 3.0) {
+            return "MEDIUM";
+        } else {
+            return "LOW";
+        }
+    }
+
     // Override toString() to include Earthquake-specific info
     @Override
     public String toString() {
         return super.toString()
                 + ", Depth = " + getDepth() + " km"
-                + ", Magnitude = " + getMagnitude()
+                + ", Magnitude = " + getMagnitude() + "Risk level = " +getRiskLevel()
                 + ", Epicenter = '" + getEpicenter() + "'";
     }
 }
