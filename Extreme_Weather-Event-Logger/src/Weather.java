@@ -64,11 +64,24 @@ public class Weather {
     public String getCause() {return cause;}
 
     public LocalDateTime getEndDateTime() {
-
         // Convert hours to minutes (to handle fractional hours)
-        long minutesToAdd = (long) (durationInHours * 60);
+        long minutesToAdd = (long) (getDurationInHours() * 60);
         return startDateTime.plusMinutes(minutesToAdd);
     }
+
+    public int getDurationInDays() {
+        return (int) Math.ceil(getDurationInHours() / 24);
+    }
+
+    //method to categorize risk level based on the intensity
+
+    public String getRiskLevel() {
+        if (intensity <= 3) return "LOW";
+        else if (intensity <= 6) return "MEDIUM";
+        else if (intensity <= 8) return "HIGH";
+        else return "EXTREME";
+    }
+
 
     public void setIntensity(int intensity) {
         if (intensity < 1 || intensity > 10) {
@@ -98,8 +111,10 @@ public class Weather {
         int count = typeCounters.getOrDefault(eventType, 0) + 1;
         typeCounters.put(eventType,count);
 
-        String prefix =  eventType.name().substring(0,1);
-        return prefix + String.format("%03d",count);
+        String prefix =  eventType.name().substring(0,1);   // first letter of type
+
+        return prefix + String.format("%03d",count);       // for ex F001, E002
+
     }
 
 
@@ -113,9 +128,9 @@ public class Weather {
                 ", durationInHours=" + getDurationInHours() +
                 ", endDateTime=" + getEndDateTime() +
                 ", intensity=" + getIntensity() +
+                ", riskLevel=" + getRiskLevel() +
                 ", cause='" + getCause() + '\'' +
                 '}';
     }
-
 
 }
