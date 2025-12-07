@@ -6,9 +6,9 @@ public class Flood extends Weather {
     public Flood(String location,
                  LocalDateTime startDateTime,
                  double durationInHours,
-                 int intensity, String cause,
+                 int intensity,
+                 String cause,
                  double waterLevel) {
-
 
         super(EventType.FLOOD,
                 location,
@@ -26,32 +26,34 @@ public class Flood extends Weather {
 
     public void setWaterLevel(double waterLevel) {
         if (waterLevel < 0) {
-            throw new IllegalArgumentException("cannot be less than 0");
+            throw new IllegalArgumentException("Water level cannot be less than 0");
         }
         this.waterLevel = waterLevel;
     }
 
-    public String getRiskLevel(){
-            if (waterLevel >= 5.0) return "EXTREME";
-            else if (waterLevel >= 3.0) return "HIGH";
-            else if (waterLevel >= 1.0) return "MEDIUM";
-            else return "LOW";
-        }
+    // Alternative simple risk level
+    @Override
+    public String getRiskLevel() {
+        if (waterLevel >= 5.0 || getIntensity() >= 9) return "EXTREME";
+        else if (waterLevel >= 3.0 || getIntensity() >= 7) return "HIGH";
+        else if (waterLevel >= 1.0 || getIntensity() >= 4) return "MEDIUM";
+        else return "LOW";
+    }
 
-        @Override
-            public String toString() {
-                return "Flood{" +
-                        "eventId='" + getEventId() + '\'' +
-                        ", location='" + getLocation() + '\'' +
-                        ", startDateTime=" + getStartDateTime() +
-                        ", duration=" + getDurationInHours() + " hrs" +
-                        ", Cause =" + getCause() +
-                        ", waterLevel=" + getWaterLevel() + " m" +
-                        ", riskLevel=" + getRiskLevel() +
-                        '}';
-            }
-
-        }
+    @Override
+    public String toString() {
+        return "Flood{" +
+                "eventId='" + getEventId() + '\'' +
+                ", location='" + getLocation() + '\'' +
+                ", startDateTime=" + getStartDateTime() +
+                ", duration=" + getDurationInHours() + " hrs" +
+                ", intensity=" + getIntensity() + "/10" +
+                ", cause='" + getCause() + '\'' +
+                ", waterLevel=" + getWaterLevel() + " m" +
+                ", riskLevel=" + getRiskLevel() +
+                '}';
+    }
+}
 
 
 
