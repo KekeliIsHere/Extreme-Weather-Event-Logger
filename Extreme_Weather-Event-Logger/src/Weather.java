@@ -48,12 +48,6 @@ public class Weather {
         long minutesToAdd = (long) (durationInHours * 60);
         return startDateTime.plusMinutes(minutesToAdd);
     }
-
-    // Derived method: duration in days (rounded up)
-    public int getDurationInDays() {
-        return (int) Math.ceil(durationInHours / 24);
-    }
-
     // Risk level method - can be overridden by subclasses
     public String getRiskLevel() {
         if (intensity <= 3) return "LOW";
