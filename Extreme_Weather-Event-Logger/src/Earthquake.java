@@ -1,21 +1,19 @@
 import java.time.LocalDateTime;
 
 public class Earthquake extends Weather {
-
     private double magnitude;
-    private double depth;
+    private double depth; // in kilometers
     private String epicenter;
 
-    // Constructor
+    // Constructor - reordered parameters for logical flow
     public Earthquake(String location,
                       LocalDateTime startDateTime,
                       double durationInHours,
                       int intensity,
                       String cause,
+                      double magnitude,    // magnitude before depth (more important)
                       double depth,
-                      double magnitude,
                       String epicenter) {
-
 
         super(EventType.EARTHQUAKE,
                 location,
@@ -24,24 +22,12 @@ public class Earthquake extends Weather {
                 intensity,
                 cause);
 
-
-        setDepth(depth);
         setMagnitude(magnitude);
+        setDepth(depth);
         setEpicenter(epicenter);
     }
 
-    // Getters and setters with optional validation
-    public double getDepth() {
-        return depth;
-    }
-
-    public void setDepth(double depth) {
-        if (depth < 0) {
-            throw new IllegalArgumentException("Depth cannot be negative");
-        }
-        this.depth = depth;
-    }
-
+    // Getters and setters with validation
     public double getMagnitude() {
         return magnitude;
     }
@@ -53,25 +39,35 @@ public class Earthquake extends Weather {
         this.magnitude = magnitude;
     }
 
+    public double getDepth() {
+        return depth;
+    }
+
+    public void setDepth(double depth) {
+        if (depth < 0) {
+            throw new IllegalArgumentException("Depth cannot be negative");
+        }
+        this.depth = depth;
+    }
+
     public String getEpicenter() {
         return epicenter;
     }
 
     public void setEpicenter(String epicenter) {
-        this.epicenter = epicenter;
+        if (epicenter == null || epicenter.trim().isEmpty()) {
+            throw new IllegalArgumentException("Epicenter cannot be empty");
+        }
+        this.epicenter = epicenter.trim();
     }
 
+    // Risk level that considers BOTH magnitude AND intensity
     @Override
     public String getRiskLevel() {
-        if (magnitude >= 7.0) {
-            return "EXTREME";
-        } else if (magnitude >= 5.0) {
-            return "HIGH";
-        } else if (magnitude >= 3.0) {
-            return "MEDIUM";
-        } else {
-            return "LOW";
-        }
+        if (magnitude >= 7.0 || getIntensity() >= 9) return "EXTREME";
+        else if (magnitude >= 5.0 || getIntensity() >= 7) return "HIGH";
+        else if (magnitude >= 3.0 || getIntensity() >= 4) return "MEDIUM";
+        else return "LOW";
     }
 
     // Override toString() to include Earthquake-specific info
@@ -82,13 +78,12 @@ public class Earthquake extends Weather {
                 ", location='" + getLocation() + '\'' +
                 ", startDateTime=" + getStartDateTime() +
                 ", duration=" + getDurationInHours() + " hrs" +
-                ", Cause=" + getCause() +
-                ", intensity=" + getIntensity() +
+                ", intensity=" + getIntensity() + "/10" +  // Added intensity
+                ", cause='" + getCause() + '\'' +
                 ", magnitude=" + getMagnitude() +
                 ", depth=" + getDepth() + " km" +
                 ", epicenter='" + getEpicenter() + '\'' +
                 ", riskLevel=" + getRiskLevel() +
                 '}';
-
     }
 }
