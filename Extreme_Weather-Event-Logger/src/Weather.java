@@ -1,61 +1,60 @@
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
 public class Weather {
-    private String eventId;
-    private EventType eventType ;
+    // Attributes
+    private final String eventId;
+    private final EventType eventType;
     private String location;
-    private LocalDateTime startDateTime;
+    private final LocalDateTime startDateTime;
     private double durationInHours;
-    private int intensity;     //val from 1-10
+    private int intensity; // 1-10
     private String cause;
 
-    /* Static map to keep track of the number of events per type
-    to Declare and initialize a HashMap
-    Map<KeyType, ValueType> map = new HashMap<>();
-    Hash Map work like Dictionaries in python.
-    so I used it here because I want to be able to generate the eventId
-    based on the weather type say if earthquake E001 or Flood F001
-    I also want to be able to keep track of how many of these events are occurring.
-    it could help in data analysis
-     */
+    // Simple counter for IDs
+    private static int eventCounter = 1;
 
-    private static Map<EventType, Integer> typeCounters = new HashMap<>();
-
+    // Constructor - public since Weather is concrete
     public Weather(EventType eventType, String location, LocalDateTime startDateTime,
-                   double durationInHours,int  intensity, String cause ){
+                   double durationInHours, int intensity, String cause) {
 
-        this.eventType = eventType;                     // pass in and store the type
-        this.eventId = generateEventId(eventType);     // auto-generate ID
+        this.eventType = eventType;
+        this.location = location;
         this.startDateTime = startDateTime;
 
-        setIntensity(intensity);
-        setLocation(location);
+        // Use setters for validation
         setDurationInHours(durationInHours);
+        setIntensity(intensity);
         setCause(cause);
+
+        // Generate simple ID
+        this.eventId = generateEventId();
     }
 
-    public String getEventId() {return eventId;}
-    public EventType getEventType() {return eventType;}
-    public String getLocation() {return location;}
-    public LocalDateTime getStartDateTime() {return startDateTime;}
-    public double getDurationInHours() {return durationInHours;}
-    public int getIntensity() {return intensity;}
-    public String getCause() {return cause;}
+    // Generate ID: "W001", "W002", etc.
+    private String generateEventId() {
+        return "W" + String.format("%03d", eventCounter++);
+    }
 
+    // Simple getters
+    public String getEventId() { return eventId; }
+    public EventType getEventType() { return eventType; }
+    public String getLocation() { return location; }
+    public LocalDateTime getStartDateTime() { return startDateTime; }
+    public double getDurationInHours() { return durationInHours; }
+    public int getIntensity() { return intensity; }
+    public String getCause() { return cause; }
+
+    // Derived method: endDateTime
     public LocalDateTime getEndDateTime() {
-        // Convert hours to minutes (to handle fractional hours)
-        long minutesToAdd = (long) (getDurationInHours() * 60);
+        long minutesToAdd = (long) (durationInHours * 60);
         return startDateTime.plusMinutes(minutesToAdd);
     }
 
+    // Derived method: duration in days (rounded up)
     public int getDurationInDays() {
-        return (int) Math.ceil(getDurationInHours() / 24);
+        return (int) Math.ceil(durationInHours / 24);
     }
 
-    //method to categorize risk level based on the intensity
-
+    // Risk level method - can be overridden by subclasses
     public String getRiskLevel() {
         if (intensity <= 3) return "LOW";
         else if (intensity <= 6) return "MEDIUM";
@@ -63,7 +62,7 @@ public class Weather {
         else return "EXTREME";
     }
 
-
+    // Validation setters
     public void setIntensity(int intensity) {
         if (intensity < 1 || intensity > 10) {
             throw new IllegalArgumentException("Intensity must be between 1 and 10");
@@ -72,7 +71,10 @@ public class Weather {
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        if (location == null || location.trim().isEmpty()) {
+            throw new IllegalArgumentException("Location cannot be empty");
+        }
+        this.location = location.trim();
     }
 
     public void setDurationInHours(double durationInHours) {
@@ -82,23 +84,14 @@ public class Weather {
         this.durationInHours = durationInHours;
     }
 
-    public void setCause(String cause){
-        this.cause = cause;
+    public void setCause(String cause) {
+        if (cause == null || cause.trim().isEmpty()) {
+            throw new IllegalArgumentException("Cause cannot be empty");
+        }
+        this.cause = cause.trim();
     }
 
-    //method to generate the ID based on type
-
-    public String generateEventId(EventType eventType){
-        int count = typeCounters.getOrDefault(eventType, 0) + 1;
-        typeCounters.put(eventType,count);
-
-        String prefix =  eventType.name().substring(0,1);   // first letter of type
-
-        return prefix + String.format("%03d",count);       // for ex F001, E002
-
-    }
-
-
+    // toString method - matching your style
     @Override
     public String toString() {
         return "Weather{" +
@@ -113,5 +106,4 @@ public class Weather {
                 ", cause='" + getCause() + '\'' +
                 '}';
     }
-
 }
