@@ -2,18 +2,16 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 public class WeatherGUI extends JFrame {
-    // Only 4 colors used throughout
-    private static final Color BLUE = Color.BLUE;      // For: header, add button, chart button
-    private static final Color GREEN = Color.GREEN;    // For: search button, LOW risk
-    private static final Color ORANGE = Color.ORANGE;  // For: stats button, MEDIUM risk
-    private static final Color RED = Color.RED;        // For: delete button, HIGH/EXTREME risk
+    private static final Color BLUE = Color.BLUE;
+    private static final Color GREEN = Color.GREEN;
+    private static final Color ORANGE = Color.ORANGE;
+    private static final Color RED = Color.RED;
 
     private final WeatherManager manager;
-    private static final String[] COLUMNS = {"ID", "Type", "Location", "Date", "Intensity", "Risk"};
-    private final DefaultTableModel model = new DefaultTableModel(COLUMNS, 0);
+    private final DefaultTableModel model;
+    private final JTable table;
 
     public WeatherGUI(WeatherManager manager) {
         this.manager = manager;
@@ -24,45 +22,57 @@ public class WeatherGUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
+        // Create table
+        String[] columns = {"ID", "Type", "Location", "Date", "Intensity", "Risk"};
+        model = new DefaultTableModel(columns, 0);
+        table = new JTable(model);
+        table.setRowHeight(30);
+        table.getColumnModel().getColumn(5).setCellRenderer(new RiskRenderer());
+
+        setupUI();
+        refreshTable();
+    }
+
+    private void setupUI() {
         // Header
         JLabel header = new JLabel("WEATHER EVENT LOGGER", SwingConstants.CENTER);
         header.setFont(new Font("Arial", Font.BOLD, 22));
         header.setForeground(Color.WHITE);
         header.setOpaque(true);
-        header.setBackground(BLUE);  // Use BLUE
+        header.setBackground(BLUE);
         header.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+        add(header, BorderLayout.NORTH);
 
         // Table
-        JTable table = new JTable(model);
-        table.setRowHeight(30);
-        table.setFont(new Font("Arial", Font.PLAIN, 12));
-        table.getColumnModel().getColumn(5).setCellRenderer(new RiskRenderer());
+        add(new JScrollPane(table), BorderLayout.CENTER);
 
         // Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        buttonPanel.setBackground(Color.WHITE);
+        add(createButtonPanel(), BorderLayout.SOUTH);
+    }
 
-        String[] labels = {"Add Event", "Delete", "Search", "Statistics", "Chart"};
-        Color[] colors = {BLUE, RED, GREEN, ORANGE, BLUE};  // Reuse colors
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        panel.setBackground(Color.WHITE);
 
-        // Create and add all buttons
-        for (int i = 0; i < labels.length; i++) {
-            buttonPanel.add(createButton(labels[i], colors[i]));
-        }
+        JButton addBtn = createButton("Add Event", BLUE);
+        JButton deleteBtn = createButton("Delete", RED);
+        JButton searchBtn = createButton("Search", GREEN);
+        JButton statsBtn = createButton("Statistics", ORANGE);
+        JButton chartBtn = createButton("Chart", BLUE);
 
-        // Action listeners
-        ((JButton)buttonPanel.getComponent(0)).addActionListener(_ -> addEvent());
-        ((JButton)buttonPanel.getComponent(1)).addActionListener(_ -> deleteEvent());
-        ((JButton)buttonPanel.getComponent(2)).addActionListener(_ -> searchEvents());
-        ((JButton)buttonPanel.getComponent(3)).addActionListener(_ -> showStatistics());
-        ((JButton)buttonPanel.getComponent(4)).addActionListener(_ -> showChart());
+        addBtn.addActionListener(e -> addEvent());
+        deleteBtn.addActionListener(e -> deleteEvent());
+        searchBtn.addActionListener(e -> searchEvents());
+        statsBtn.addActionListener(e -> showStatistics());
+        chartBtn.addActionListener(e -> showChart());
 
-        // Layout
-        add(header, BorderLayout.NORTH);
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        panel.add(addBtn);
+        panel.add(deleteBtn);
+        panel.add(searchBtn);
+        panel.add(statsBtn);
+        panel.add(chartBtn);
 
-        refreshTable();
+        return panel;
     }
 
     private JButton createButton(String text, Color color) {
@@ -75,30 +85,77 @@ public class WeatherGUI extends JFrame {
         return btn;
     }
 
-    // ========== ALL YOUR ORIGINAL METHODS BELOW - UNCHANGED ==========
-
     private void refreshTable() {
         model.setRowCount(0);
-        for (Weather event : manager.getAllEvents()) {
-            model.addRow(new Object[]{
-                    event.getEventId(),
-                    event.getEventType(),
-                    event.getLocation(),
-                    event.getStartDateTime().toLocalDate(),
-                    event.getIntensity(),
-                    event.getRiskLevel()
-            });
+        Object[][] data = manager.getTableData();
+        for (Object[] row : data) {
+            model.addRow(row);
         }
     }
 
     private void addEvent() {
-        String[] types = {"FLOOD", "HURRICANE", "EARTHQUAKE", "WILDFIRE"};
+        String[] types = {"FLOOD", "EARTHQUAKE", "WILDFIRE"};
+
         String type = (String) JOptionPane.showInputDialog(this,
                 "Select Event Type:", "Add Event", JOptionPane.QUESTION_MESSAGE,
                 null, types, types[0]);
 
         if (type == null) return;
 
+        // Get basic info
+        Object[] basicInfo = showInputDialog("Basic Information", type);
+        if (basicInfo == null) return;
+
+        String location = (String) basicInfo[0];
+        LocalDateTime start = (LocalDateTime) basicInfo[1];
+        int intensity = (int) basicInfo[2];
+        String cause = (String) basicInfo[3];
+
+        // Create event based on type
+        Weather event = null;
+
+        switch (type) {
+            case "FLOOD":
+                String water = JOptionPane.showInputDialog("Water Level (m):");
+                if (water != null) {
+                    event = manager.createFloodEvent(location, start, intensity, cause,
+                            Double.parseDouble(water));
+                }
+                break;
+
+            case "EARTHQUAKE":
+                String mag = JOptionPane.showInputDialog("Magnitude:");
+                String depth = JOptionPane.showInputDialog("Depth (km):");
+                String epicenter = JOptionPane.showInputDialog("Epicenter:");
+                if (mag != null && depth != null && epicenter != null) {
+                    event = manager.createEarthquakeEvent(location, start, intensity, cause,
+                            Double.parseDouble(mag),
+                            Double.parseDouble(depth),
+                            epicenter);
+                }
+                break;
+
+            case "WILDFIRE":
+                String area = JOptionPane.showInputDialog("Area Burned (ha):");
+                String contain = JOptionPane.showInputDialog("Containment %:");
+                String fuel = JOptionPane.showInputDialog("Fuel Type:");
+                if (area != null && contain != null && fuel != null) {
+                    event = manager.createWildfireEvent(location, start, intensity, cause,
+                            Double.parseDouble(area),
+                            Integer.parseInt(contain),
+                            fuel);
+                }
+                break;
+        }
+
+        if (event != null) {
+            manager.addEvent(event);
+            refreshTable();
+            JOptionPane.showMessageDialog(this, "Event added successfully!");
+        }
+    }
+
+    private Object[] showInputDialog(String title, String type) {
         JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -114,59 +171,25 @@ public class WeatherGUI extends JFrame {
         panel.add(new JLabel("Intensity (1-10):")); panel.add(intensity);
         panel.add(new JLabel("Cause:")); panel.add(cause);
 
-        if (JOptionPane.showConfirmDialog(this, panel, "Add " + type,
+        if (JOptionPane.showConfirmDialog(this, panel, title,
                 JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             try {
                 LocalDateTime start = LocalDateTime.parse(date.getText() + "T" + time.getText() + ":00");
-                Weather event = createEvent(type, location.getText(), start,
-                        (int) intensity.getValue(), cause.getText());
-
-                if (event != null) {
-                    manager.addEvent(event);
-                    refreshTable();
-                    JOptionPane.showMessageDialog(this, "Event added successfully!");
-                }
+                return new Object[]{location.getText(), start, intensity.getValue(), cause.getText()};
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error: Invalid input");
+                JOptionPane.showMessageDialog(this, "Invalid date/time format!");
             }
-        }
-    }
-
-    private Weather createEvent(String type, String location, LocalDateTime start,
-                                int intensity, String cause) {
-        try {
-            switch (type) {
-                case "FLOOD":
-                    String water = JOptionPane.showInputDialog("Water Level (m):");
-                    return new Flood(location, start, 24, intensity, cause, Double.parseDouble(water));
-                case "HURRICANE":
-                    String wind = JOptionPane.showInputDialog("Wind Speed (mph):");
-                    return new Hurricane(location, start, 24, intensity, cause,
-                            Double.parseDouble(wind), 980, 150);
-                case "EARTHQUAKE":
-                    String mag = JOptionPane.showInputDialog("Magnitude:");
-                    return new Earthquake(location, start, 0.5, intensity, cause,
-                            Double.parseDouble(mag), 10, "Epicenter");
-                case "WILDFIRE":
-                    String area = JOptionPane.showInputDialog("Area Burned (ha):");
-                    String contain = JOptionPane.showInputDialog("Containment %:");
-                    String fuel = JOptionPane.showInputDialog("Fuel Type:");
-                    return new WildFire(location, start, 48, intensity, cause,
-                            Double.parseDouble(area), Integer.parseInt(contain), fuel);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Invalid input: " + e.getMessage());
         }
         return null;
     }
 
     private void deleteEvent() {
-        JTable table = (JTable) ((JViewport) ((JScrollPane) getContentPane().getComponent(1)).getComponent(0)).getView();
         int row = table.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Select an event first");
             return;
         }
+
         String id = (String) model.getValueAt(row, 0);
         if (manager.deleteEvent(id)) {
             model.removeRow(row);
@@ -174,56 +197,43 @@ public class WeatherGUI extends JFrame {
         }
     }
 
-    private void searchEvents() {  // FIXED: This method was missing
+    private void searchEvents() {
         String term = JOptionPane.showInputDialog(this, "Enter location to search:");
         if (term != null && !term.trim().isEmpty()) {
-            var results = manager.searchByLocation(term);
-            if (!results.isEmpty()) {
-                JTextArea area = new JTextArea();
-                area.append("Found " + results.size() + " events:\n\n");
-                for (Weather event : results) {
-                    area.append("• " + event.getEventId() + " - " +
-                            event.getLocation() + " (" + event.getEventType() + ")\n");
-                }
-                JOptionPane.showMessageDialog(this, new JScrollPane(area));
-            } else {
-                JOptionPane.showMessageDialog(this, "No events found");
-            }
+            String results = manager.getSearchResultsText(term);
+            JTextArea area = new JTextArea(results);
+            JOptionPane.showMessageDialog(this, new JScrollPane(area));
         }
     }
 
     private void showStatistics() {
-        // Use the manager's built-in analysis method
         String statsText = "=== WEATHER EVENT STATISTICS ===\n\n" +
                 manager.getAnalysisSummary();
 
-        // Create display area
-        JTextArea statsArea = new JTextArea(statsText);
-        statsArea.setEditable(false);
-        statsArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        JTextArea area = new JTextArea(statsText);
+        area.setEditable(false);
+        area.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
-        // Show in dialog
-        JOptionPane.showMessageDialog(this,
-                new JScrollPane(statsArea),
-                "Weather Statistics",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+        JOptionPane.showMessageDialog(this, new JScrollPane(area),
+                "Weather Statistics", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void showChart() {  // FIXED: This method was missing
-        JDialog chartDialog = new JDialog(this, "Risk Level Chart", true);
-        chartDialog.setSize(600, 400);
-        chartDialog.setLocationRelativeTo(this);
+    private void showChart() {
+        JDialog dialog = new JDialog(this, "Risk Level Chart", true);
+        dialog.setSize(600, 400);
+        dialog.setLocationRelativeTo(this);
 
-        ChartPanel chartPanel = new ChartPanel(manager);
-        chartDialog.add(chartPanel);
-        chartDialog.setVisible(true);
+        // Create simple chart panel
+        JPanel chartPanel = new ChartPanel(manager);
+        dialog.add(chartPanel);
+        dialog.setVisible(true);
     }
 
-    // Risk Renderer - uses same 4 colors
+    // Risk Renderer
     static class RiskRenderer extends DefaultTableCellRenderer {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
+
             Component c = super.getTableCellRendererComponent(table, value,
                     isSelected, hasFocus, row, column);
 
@@ -236,18 +246,23 @@ public class WeatherGUI extends JFrame {
                     case "LOW": c.setBackground(GREEN); break;
                     case "MEDIUM": c.setBackground(ORANGE); break;
                     case "HIGH": c.setBackground(RED); break;
-                    case "EXTREME": c.setBackground(RED.darker());
-                        c.setForeground(Color.WHITE); break;
+                    case "EXTREME":
+                        c.setBackground(RED.darker());
+                        c.setForeground(Color.WHITE);
+                        break;
                 }
+
                 if (isSelected) c.setBackground(c.getBackground().darker());
             }
             return c;
         }
     }
 
-    // Chart Panel
-    public static class ChartPanel extends JPanel {
+    // Chart Panel (simplified - no HashMaps)
+    static class ChartPanel extends JPanel {
         private final WeatherManager manager;
+        private final String[] riskLevels = {"LOW", "MEDIUM", "HIGH", "EXTREME"};
+        private final Color[] colors = {GREEN, ORANGE, RED, RED.darker()};
 
         public ChartPanel(WeatherManager manager) {
             this.manager = manager;
@@ -258,41 +273,43 @@ public class WeatherGUI extends JFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            Map<String, Integer> riskData = manager.getEventsByRiskLevel();
-            String[] risks = {"LOW", "MEDIUM", "HIGH", "EXTREME"};
-            Color[] colors = {GREEN, ORANGE, RED, RED.darker()};  // Same 4 colors
+            // Get data from manager
+            int[] counts = manager.getRiskLevelCounts();
+
+            // Find maximum for scaling
+            int max = 1;
+            for (int count : counts) {
+                if (count > max) max = count;
+            }
 
             int width = getWidth();
             int height = getHeight();
 
-            int max = 1;
-            for (int value : riskData.values()) {
-                if (value > max) max = value;
-            }
+            // Draw title
+            g2d.setFont(new Font("Arial", Font.BOLD, 18));
+            g2d.drawString("Risk Level Distribution", width/2 - 100, 40);
 
+            // Draw bars
             int barWidth = 80;
             int spacing = 40;
             int startX = 60;
 
-            g2d.setFont(new Font("Arial", Font.BOLD, 18));
-            g2d.setColor(Color.BLACK);
-            g2d.drawString("Risk Level Distribution", width/2 - 100, 40);
-
-            for (int i = 0; i < risks.length; i++) {
-                int value = riskData.getOrDefault(risks[i], 0);
+            for (int i = 0; i < riskLevels.length; i++) {
+                int value = counts[i];
                 int barHeight = (value * (height - 120)) / max;
                 int x = startX + i * (barWidth + spacing);
                 int y = height - 80 - barHeight;
 
+                // Draw bar
                 g2d.setColor(colors[i]);
                 g2d.fillRect(x, y, barWidth, barHeight);
 
+                // Draw value and label
                 g2d.setColor(Color.BLACK);
-                g2d.setFont(new Font("Arial", Font.BOLD, 12));
+                g2d.setFont(new Font("Arial", Font.PLAIN, 12));
                 g2d.drawString(String.valueOf(value), x + barWidth/2 - 5, y - 5);
-                g2d.drawString(risks[i], x + barWidth/2 - 15, height - 60);
+                g2d.drawString(riskLevels[i], x + barWidth/2 - 20, height - 60);
             }
         }
     }
