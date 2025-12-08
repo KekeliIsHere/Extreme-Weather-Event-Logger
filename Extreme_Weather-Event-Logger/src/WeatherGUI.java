@@ -192,24 +192,22 @@ public class WeatherGUI extends JFrame {
         }
     }
 
-    private void showStatistics() {  // FIXED: This method was missing
-        StringBuilder stats = new StringBuilder();
-        stats.append("=== WEATHER EVENT STATISTICS ===\n\n");
-        stats.append("Total Events: ").append(manager.getTotalEvents()).append("\n\n");
+    private void showStatistics() {
+        // Use the manager's built-in analysis method
+        String statsText = "=== WEATHER EVENT STATISTICS ===\n\n" +
+                manager.getAnalysisSummary();
 
-        stats.append("Events by Type:\n");
-        manager.getEventCountByType().forEach((type, count) ->
-                stats.append("  ").append(type).append(": ").append(count).append("\n"));
+        // Create display area
+        JTextArea statsArea = new JTextArea(statsText);
+        statsArea.setEditable(false);
+        statsArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
-        stats.append("\nRisk Level Distribution:\n");
-        manager.getEventsByRiskLevel().forEach((risk, count) ->
-                stats.append("  ").append(risk).append(": ").append(count).append("\n"));
-
-        JTextArea area = new JTextArea(stats.toString());
-        area.setEditable(false);
-        area.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        JOptionPane.showMessageDialog(this, new JScrollPane(area),
-                "Statistics", JOptionPane.INFORMATION_MESSAGE);
+        // Show in dialog
+        JOptionPane.showMessageDialog(this,
+                new JScrollPane(statsArea),
+                "Weather Statistics",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void showChart() {  // FIXED: This method was missing
