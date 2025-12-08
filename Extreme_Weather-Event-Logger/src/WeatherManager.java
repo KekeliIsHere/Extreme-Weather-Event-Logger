@@ -50,7 +50,7 @@ public class WeatherManager {
         getEventCountByType().forEach((type, count) ->
                 summary.append("  ").append(type).append(": ").append(count).append("\n"));
 
-        summary.append("\nRisk Distribution:\n");
+        summary.append("\nRisk Level Distribution:\n");
         getEventsByRiskLevel().forEach((risk, count) ->
                 summary.append("  ").append(risk).append(": ").append(count).append("\n"));
 
