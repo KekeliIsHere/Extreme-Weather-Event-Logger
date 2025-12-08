@@ -94,7 +94,7 @@ public class WeatherGUI extends JFrame {
     }
 
     private void addEvent() {
-        String[] types = {"FLOOD", "EARTHQUAKE", "WILDFIRE"};
+        String[] types = {"FLOOD", "EARTHQUAKE", "WILDFIRE","HURRICANE"};
 
         String type = (String) JOptionPane.showInputDialog(this,
                 "Select Event Type:", "Add Event", JOptionPane.QUESTION_MESSAGE,
@@ -134,7 +134,6 @@ public class WeatherGUI extends JFrame {
                             epicenter);
                 }
                 break;
-
             case "WILDFIRE":
                 String area = JOptionPane.showInputDialog("Area Burned (ha):");
                 String contain = JOptionPane.showInputDialog("Containment %:");
@@ -144,6 +143,19 @@ public class WeatherGUI extends JFrame {
                             Double.parseDouble(area),
                             Integer.parseInt(contain),
                             fuel);
+                }
+                break;
+            case "HURRICANE":
+                String windSpeed = JOptionPane.showInputDialog("Windspeed(kilometers per hour (km/h): ");
+                String pressure = JOptionPane.showInputDialog("Pressure(Pa): ");
+                String size = JOptionPane.showInputDialog("Radius in miles");
+
+                if (windSpeed != null && pressure != null && size != null) {
+                    event = manager.createHurricaneEvent(location, start,intensity, cause,
+                            Double.parseDouble(windSpeed),
+                            Double.parseDouble(pressure),
+                            Double.parseDouble(size)
+                            );
                 }
                 break;
         }
@@ -159,9 +171,9 @@ public class WeatherGUI extends JFrame {
         JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JTextField location = new JTextField("Accra, Ghana");
+        JTextField location = new JTextField("");
         JTextField date = new JTextField(LocalDateTime.now().toLocalDate().toString());
-        JTextField time = new JTextField("12:00");
+        JTextField time = new JTextField(LocalDateTime.now().toLocalTime().toString().substring(0,5));
         JSpinner intensity = new JSpinner(new SpinnerNumberModel(5, 1, 10, 1));
         JTextField cause = new JTextField("eg natural/human");
 

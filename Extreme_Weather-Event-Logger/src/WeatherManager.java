@@ -66,8 +66,16 @@ public class WeatherManager {
     public Weather createWildfireEvent(String location, LocalDateTime start,
                                        int intensity, String cause,
                                        double areaBurned, int containmentPercent, String fuelType) {
-        return new WildFire(location, start, 48, intensity, cause,
+        return new Wildfire(location, start, 48, intensity, cause,
                 areaBurned, containmentPercent, fuelType);
+    }
+    public Weather createHurricaneEvent(String location,
+                                                LocalDateTime start,                                                                                               int intensity,
+                                                String cause,
+                                                double windSpeed,
+                                                double pressure,
+                                                double size) {
+        return new Hurricane(location, start, 48,intensity,cause,windSpeed,pressure,size);
     }
 
     // Get table data for GUI
