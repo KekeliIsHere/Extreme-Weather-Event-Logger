@@ -1,146 +1,67 @@
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
-/*This class will manage all the weather events
-it can add, delete, search, sort display and analyze
+public class WeatherManager {
+    private final ArrayList<Weather> events = new ArrayList<>();
 
- */
-
-public class WeatherManager{
-    private ArrayList<Weather> events = new ArrayList<>();
-
-//    WeatherManager Constructor
-    public WeatherManager(){}
-
-    //method to add event with validation
-    public void addEvent(Weather event){
-        if (event == null){
-            throw new IllegalArgumentException("event cant be null");
-        }
+    public void addEvent(Weather event) {
         events.add(event);
     }
 
-    /*Delete an event by their iD
-    if successful should return true else false if it is not found
-     */
-    public boolean deleteEvent(String eventId){
-      for(int i= 0; i<events.size();i++) {
-          Weather event = events.get(i);
-
-          if (event.getEventId().equals(eventId)) {
-              events.remove(i);                         // delete the event
-              return true;                          // tell user it was deleted
-          }
-      }
-        // If no match was found, return false
-        return false;
+    public boolean deleteEvent(String eventId) {
+        return events.removeIf(e -> e.getEventId().equals(eventId));
     }
 
-    //get all events
-    public ArrayList<Weather> getAllEvents(){
-        return events;      //return new ArrayList<>(events);
-    }
-
-    //display all events
-
-    public void displayAllEvents(){
-        if (events.isEmpty()){
-            System.out.println("No events recorded.");
-        } else {
-            for (Weather event : events) {
-                System.out.println(event);
-            }
-        }
-    }
-
-          //Searching elements
-
-    //Get events by location
-    public ArrayList<Weather> getEventsByLocation(String location){
-        ArrayList<Weather> eventsByLocation = new ArrayList<>();
-        for (Weather i : events) {
-            if (i.getLocation().equalsIgnoreCase(location)) {
-                eventsByLocation.add(i);
-            }
-        }
-        if (!eventsByLocation.isEmpty()) {
-            return eventsByLocation;
-        } else {
-            System.out.println("No events found with this location");
-            return new ArrayList<>();    // return an empty list
-        }
-    }
-
-    //Get all events that match a given risk level (LOW, MEDIUM, HIGH, EXTREME).
-
-    // Get HighLight Intensity Events
-    public ArrayList<Weather> getEventsByRiskLevel(String riskLevel) {
-        ArrayList<Weather> eventsByRiskLevel = new ArrayList<>();
-        for (Weather i : events) {
-            if (i.getRiskLevel().equalsIgnoreCase(riskLevel))
-                eventsByRiskLevel.add(i);
-        }
-
-        if (!eventsByRiskLevel.isEmpty()) {
-            return eventsByRiskLevel;
-        }
-        else{
-            System.out.println("No events found with this location");
-            return new ArrayList<>();
-        }
-    }
-
-      //sorting
-
-
-     //sort by date from latest to oldest
-    public void sortByDate(){
-        events.sort(Comparator.comparing(Weather::getStartDateTime).reversed());
-    }
-
-    public void sortByLocation(){
-        events.sort(Comparator.comparing(Weather::getLocation));
-    }
-    public void sortByDuration(){
-        events.sort(Comparator.comparingDouble(Weather::getDurationInHours));
-    }
-
-
-    //sone features that will help for the data analysis part
-
-
-    //count how many events belong to a specific weather type
-    public int countEventsByType(EventType type) {
-        int count = 0;
+    public List<Weather> searchByLocation(String location) {
+        List<Weather> results = new ArrayList<>();
+        String searchTerm = location.toLowerCase();
         for (Weather event : events) {
-            if (event.getEventType() == type) {
-                count++;
+            if (event.getLocation().toLowerCase().contains(searchTerm)) {
+                results.add(event);
             }
         }
-        return count;
+        return results;
     }
 
-    //so there are risk levels right, low medium high
-    //so this method counts the events based on their risk levels
-    //like how many events were high, low or medium we can use graphs to visualize
-
-    public int countEventsByRiskLevel(String riskLevel){
-        int count = 0;
+    public Map<EventType, Integer> getEventCountByType() {
+        Map<EventType, Integer> counts = new HashMap<>();
         for (Weather event : events) {
-            if (event.getRiskLevel().equalsIgnoreCase(riskLevel)) {
-                count++;
-            }
+            EventType type = event.getEventType();
+            counts.put(type, counts.getOrDefault(type, 0) + 1);
         }
-        return count;
+        return counts;
     }
 
-    // Calculate the average intensity for all the weather events
-    public double getAverageIntensity() {
-        if (events.isEmpty()) return 0;
-        double total = 0;
+    public Map<String, Integer> getEventsByRiskLevel() {
+        Map<String, Integer> risks = new HashMap<>();
         for (Weather event : events) {
-            total += event.getIntensity();
+            String risk = event.getRiskLevel();
+            risks.put(risk, risks.getOrDefault(risk, 0) + 1);
         }
-        return total / events.size();
+        return risks;
+    }
+
+    public String getAnalysisSummary() {
+        if (events.isEmpty()) return "No events to analyze";
+
+        StringBuilder summary = new StringBuilder();
+        summary.append("Total Events: ").append(events.size()).append("\n\n");
+
+        summary.append("Events by Type:\n");
+        getEventCountByType().forEach((type, count) ->
+                summary.append("  ").append(type).append(": ").append(count).append("\n"));
+
+        summary.append("\nRisk Distribution:\n");
+        getEventsByRiskLevel().forEach((risk, count) ->
+                summary.append("  ").append(risk).append(": ").append(count).append("\n"));
+
+        return summary.toString();
+    }
+
+    public ArrayList<Weather> getAllEvents() {
+        return new ArrayList<>(events);
+    }
+
+    public int getTotalEvents() {
+        return events.size();
     }
 }
