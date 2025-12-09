@@ -1,11 +1,9 @@
 import java.time.LocalDateTime;
-
 public class Flood extends Weather {
-    private double waterLevel;
+    private double waterLevel;   // in meters
 
     public Flood(String location,
                  LocalDateTime startDateTime,
-                 double durationInHours,
                  int intensity,
                  String cause,
                  double waterLevel) {
@@ -13,7 +11,6 @@ public class Flood extends Weather {
         super(EventType.FLOOD,
                 location,
                 startDateTime,
-                durationInHours,
                 intensity,
                 cause);
 
@@ -31,13 +28,12 @@ public class Flood extends Weather {
         this.waterLevel = waterLevel;
     }
 
-    // Alternative simple risk level
     @Override
-    public String getRiskLevel() {
-        if (waterLevel >= 5.0 || getIntensity() >= 9) return "EXTREME";
-        else if (waterLevel >= 3.0 || getIntensity() >= 7) return "HIGH";
-        else if (waterLevel >= 1.0 || getIntensity() >= 4) return "MEDIUM";
-        else return "LOW";
+    public RiskLevel getRiskLevel() {
+        if (waterLevel >= 5.0) return RiskLevel.EXTREME;
+        else if (waterLevel >= 3.0) return RiskLevel.HIGH;
+        else if (waterLevel >= 1.0) return RiskLevel.MEDIUM;
+        else return RiskLevel.LOW;
     }
 
     @Override
@@ -46,7 +42,6 @@ public class Flood extends Weather {
                 "eventId='" + getEventId() + '\'' +
                 ", location='" + getLocation() + '\'' +
                 ", startDateTime=" + getStartDateTime() +
-                ", duration=" + getDurationInHours() + " hrs" +
                 ", intensity=" + getIntensity() + "/10" +
                 ", cause='" + getCause() + '\'' +
                 ", waterLevel=" + getWaterLevel() + " m" +
@@ -54,6 +49,7 @@ public class Flood extends Weather {
                 '}';
     }
 }
+
 
 
 
