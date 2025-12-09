@@ -150,7 +150,7 @@ public class WeatherGUI extends JFrame {
                     case "WILDFIRE":
                         double area = Double.parseDouble(JOptionPane.showInputDialog("Area (ha):"));
                         int contain = Integer.parseInt(JOptionPane.showInputDialog("Containment %:"));
-                        event = new WildFire(location.getText(), eventDate,
+                        event = new Wildfire(location.getText(), eventDate,
                                 (int) intensity.getValue(), cause.getText(), area, contain);
                         break;
                     case "HURRICANE":

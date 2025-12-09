@@ -4,9 +4,9 @@ public class MainWeather {
         WeatherManager manager = new WeatherManager();
 
         // Create the GUI and link it to the manager
-        WeatherGUI gui = new WeatherGUI(manager);
+        WeatherGUI gui = new WeatherGUI();
 
         // Show the main window (this builds and displays the GUI)
-        gui.showMainWindow();
+        gui.setVisible(true);
     }
 }

@@ -1,9 +1,9 @@
 import java.time.LocalDateTime;
-public class WildFire extends Weather {
+public class Wildfire extends Weather {
     private double areaBurned;
     private int containmentPercent;    // 1-100%
 
-    public WildFire(String location,
+    public Wildfire(String location,
                     LocalDateTime startDateTime,
                     int intensity,
                     String cause,
@@ -49,7 +49,7 @@ public class WildFire extends Weather {
 
     @Override
     public String toString() {
-        return "WildFire{" +
+        return "Wildfire{" +
                 "eventId='" + getEventId() + '\'' +
                 ", location='" + getLocation() + '\'' +
                 ", startDateTime=" + getStartDateTime() +

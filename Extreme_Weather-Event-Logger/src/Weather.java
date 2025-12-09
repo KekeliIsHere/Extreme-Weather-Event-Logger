@@ -8,7 +8,8 @@ public class Weather {
     private final LocalDateTime startDateTime;
     private int intensity;                                //val ranges from 1-10
     private String cause;
-    private static int eventCounter = 1;                  //helps to generate IDs
+    private static int eventCounter = 1;
+    //helps to generate IDs
 
     public Weather(EventType eventType, String location, LocalDateTime startDateTime,
                    int intensity, String cause) {
