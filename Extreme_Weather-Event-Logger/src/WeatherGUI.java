@@ -179,8 +179,8 @@ public class WeatherGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }
-
-    static class RiskRenderer extends DefaultTableCellRenderer {
+// for coloring the cell based on risklevel
+   public  static class RiskRenderer extends DefaultTableCellRenderer {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
 
@@ -188,8 +188,7 @@ public class WeatherGUI extends JFrame {
                     isSelected, hasFocus, row, column);
 
             if (value instanceof RiskLevel risk) {
-                ((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
-
+            
                 switch (risk) {
                     case LOW:
                         c.setBackground(Color.GREEN.brighter());
