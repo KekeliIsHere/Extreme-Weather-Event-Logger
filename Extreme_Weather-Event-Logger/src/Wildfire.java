@@ -1,26 +1,20 @@
 import java.time.LocalDateTime;
+public class WildFire extends Weather {
+    private double areaBurned;
+    private int containmentPercent;    // 1-100%
 
-public class Wildfire extends Weather {
-    private double areaBurned; // in hectares
-    private int containmentPercent; // 0-100
-    private String fuelType; // e.g., grass, forest
-
-    public Wildfire(String location,
+    public WildFire(String location,
                     LocalDateTime startDateTime,
-                    double durationInHours,
                     int intensity,
                     String cause,
                     double areaBurned,
-                    int containmentPercent,
-                    String fuelType) {
+                    int containmentPercent) {
 
-        super(EventType.WILDFIRE, location, startDateTime, durationInHours, intensity, cause);
+        super(EventType.WILDFIRE, location, startDateTime, intensity, cause);
 
         setAreaBurned(areaBurned);
         setContainmentPercent(containmentPercent);
-        setFuelType(fuelType);
     }
-
     public double getAreaBurned() {
         return areaBurned;
     }
@@ -40,35 +34,30 @@ public class Wildfire extends Weather {
         this.containmentPercent = containmentPercent;
     }
 
-    public String getFuelType() {
-        return fuelType;
-    }
-
-    public void setFuelType(String fuelType) {
-        this.fuelType = fuelType;
-    }
-
     @Override
-    public String getRiskLevel() {
-        // Simple heuristic combining area and containment
-        if (containmentPercent < 30 && areaBurned >= 1000) return "EXTREME";
-        else if (areaBurned >= 500) return "HIGH";
-        else if (areaBurned >= 50) return "MEDIUM";
-        else return "LOW";
+    public RiskLevel getRiskLevel() {
+        if (areaBurned >= 1000 && containmentPercent < 30) {
+            return RiskLevel.EXTREME;
+        } else if (areaBurned >= 500 && containmentPercent < 50) {
+            return RiskLevel.HIGH;
+        } else if (areaBurned >= 50 && containmentPercent < 70) {
+            return RiskLevel.MEDIUM;
+        } else {
+            return RiskLevel.LOW;
+        }
     }
 
     @Override
     public String toString() {
-        return "Wildfire{" +
+        return "WildFire{" +
                 "eventId='" + getEventId() + '\'' +
                 ", location='" + getLocation() + '\'' +
                 ", startDateTime=" + getStartDateTime() +
-                ", duration=" + getDurationInHours() + " hrs" +
                 ", cause=" + getCause() +
                 ", areaBurned=" + getAreaBurned() + " ha" +
                 ", containmentPercent=" + getContainmentPercent() + "%" +
-                ", fuelType='" + getFuelType() + '\'' +
                 ", riskLevel=" + getRiskLevel() +
                 '}';
     }
 }
+
