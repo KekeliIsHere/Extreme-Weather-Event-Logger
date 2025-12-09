@@ -139,8 +139,7 @@ public class WeatherGUI extends JFrame {
                 switch (type) {
                     case "FLOOD":
                         double water = Double.parseDouble(JOptionPane.showInputDialog("Water Level (m):"));
-                        event = new Flood(location.getText(), eventDate,
-                                (int) intensity.getValue(), cause.getText(), water);
+                        event = new Flood(location.getText(), eventDate,(int) intensity.getValue(), cause.getText(), water);
                         break;
                     case "EARTHQUAKE":
                         double mag = Double.parseDouble(JOptionPane.showInputDialog("Magnitude:"));
