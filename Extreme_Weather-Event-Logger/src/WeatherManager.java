@@ -1,10 +1,11 @@
+
 import java.util.*;
 import java.time.LocalDateTime;
 
 public class WeatherManager {
     private final ArrayList<Weather> events = new ArrayList<>();
 
-    
+
     public void addEvent(Weather event) {
         events.add(event);
     }
@@ -53,29 +54,29 @@ public class WeatherManager {
 
     public Weather createFloodEvent(String location, LocalDateTime start,
                                     int intensity, String cause, double waterLevel) {
-        return new Flood(location, start, 24, intensity, cause, waterLevel);
+        return new Flood(location, start, intensity, cause, waterLevel);
     }
 
     public Weather createEarthquakeEvent(String location, LocalDateTime start,
                                          int intensity, String cause,
                                          double magnitude, double depth, String epicenter) {
-        return new Earthquake(location, start, 0.5, intensity, cause,
+        return new Earthquake(location, start, intensity, cause,
                 magnitude, depth, epicenter);
     }
 
     public Weather createWildfireEvent(String location, LocalDateTime start,
                                        int intensity, String cause,
                                        double areaBurned, int containmentPercent, String fuelType) {
-        return new Wildfire(location, start, 48, intensity, cause,
+        return new WildFire(location, start, intensity, cause,
                 areaBurned, containmentPercent, fuelType);
     }
     public Weather createHurricaneEvent(String location,
-                                                LocalDateTime start,                                                                                               int intensity,
-                                                String cause,
-                                                double windSpeed,
-                                                double pressure,
-                                                double size) {
-        return new Hurricane(location, start, 48,intensity,cause,windSpeed,pressure,size);
+                                        LocalDateTime start,                                                                                               int intensity,
+                                        String cause,
+                                        double windSpeed,
+                                        double pressure,
+                                        double size) {
+        return new Hurricane(location, start,intensity,cause,windSpeed,pressure,size);
     }
 
     // Get table data for GUI
