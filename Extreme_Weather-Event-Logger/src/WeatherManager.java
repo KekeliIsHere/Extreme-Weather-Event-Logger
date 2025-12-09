@@ -1,194 +1,195 @@
-
 import java.util.*;
-import java.time.LocalDateTime;
 
 public class WeatherManager {
     private final ArrayList<Weather> events = new ArrayList<>();
 
-
     public void addEvent(Weather event) {
         events.add(event);
     }
-
-    public boolean deleteEvent(String eventId) {
-        for (int i = 0; i < events.size(); i++) {
-            if (events.get(i).getEventId().equals(eventId)) {
-                events.remove(i);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public List<Weather> searchByLocation(String location) {
-        List<Weather> results = new ArrayList<>();
-        if (location == null || location.trim().isEmpty()) {
-            return results;
-        }
-
-        String searchTerm = location.toLowerCase().trim();
-        for (Weather event : events) {
-            if (event.getLocation().toLowerCase().contains(searchTerm)) {
-                results.add(event);
-            }
-        }
-        return results;
-    }
-
-    // GUI Helper Methods
-    public String getSearchResultsText(String location) {
-        List<Weather> results = searchByLocation(location);
-        if (results.isEmpty()) {
-            return "No events found for location: " + location;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("Found ").append(results.size()).append(" events:\n\n");
-        for (Weather event : results) {
-            sb.append("• ").append(event.getEventId())
-                    .append(" - ").append(event.getLocation())
-                    .append(" (").append(event.getEventType()).append(")\n");
-        }
-        return sb.toString();
-    }
-
-    public Weather createFloodEvent(String location, LocalDateTime start,
-                                    int intensity, String cause, double waterLevel) {
-        return new Flood(location, start, intensity, cause, waterLevel);
-    }
-
-    public Weather createEarthquakeEvent(String location, LocalDateTime start,
-                                         int intensity, String cause,
-                                         double magnitude, double depth, String epicenter) {
-        return new Earthquake(location, start, intensity, cause,
-                magnitude, depth, epicenter);
-    }
-
-    public Weather createWildfireEvent(String location, LocalDateTime start,
-                                       int intensity, String cause,
-                                       double areaBurned, int containmentPercent, String fuelType) {
-        return new WildFire(location, start, intensity, cause,
-                areaBurned, containmentPercent, fuelType);
-    }
-    public Weather createHurricaneEvent(String location,
-                                        LocalDateTime start,                                                                                               int intensity,
-                                        String cause,
-                                        double windSpeed,
-                                        double pressure,
-                                        double size) {
-        return new Hurricane(location, start,intensity,cause,windSpeed,pressure,size);
-    }
-
-    // Get table data for GUI
+//5 cols ID, Type, location, date, risk
     public Object[][] getTableData() {
-        Object[][] data = new Object[events.size()][6];
+        Object[][] data = new Object[events.size()][5];
         for (int i = 0; i < events.size(); i++) {
             Weather event = events.get(i);
             data[i][0] = event.getEventId();
             data[i][1] = event.getEventType();
             data[i][2] = event.getLocation();
             data[i][3] = event.getStartDateTime().toLocalDate();
-            data[i][4] = event.getIntensity();
-            data[i][5] = event.getRiskLevel();
+            data[i][4] = event.getRiskLevel();
         }
         return data;
     }
 
-    // Statistics methods without HashMaps
-    public String getEventCountByTypeText() {
-        if (events.isEmpty()) return "";
-
-        int floodCount = 0;
-        int earthquakeCount = 0;
-        int wildfireCount = 0;
-        int hurricaneCount = 0;
-
+    // fxn to count events by type-used by other methods
+    private int[] countEventsByType() {
+        int[] counts = new int[4];        // [Flood, Earthquake, Wildfire, Hurricane]
         for (Weather event : events) {
             switch (event.getEventType()) {
-                case FLOOD: floodCount++; break;
-                case EARTHQUAKE: earthquakeCount++; break;
-                case WILDFIRE: wildfireCount++; break;
-                case HURRICANE: hurricaneCount++; break;
+                case FLOOD: counts[0]++; break;
+                case EARTHQUAKE: counts[1]++; break;
+                case WILDFIRE: counts[2]++; break;
+                case HURRICANE: counts[3]++; break;
             }
         }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("FLOOD: ").append(floodCount).append("\n");
-        sb.append("EARTHQUAKE: ").append(earthquakeCount).append("\n");
-        sb.append("WILDFIRE: ").append(wildfireCount).append("\n");
-        sb.append("HURRICANE: ").append(hurricaneCount).append("\n");
-
-        return sb.toString();
-    }
-
-    public String getEventsByRiskLevelText() {
-        if (events.isEmpty()) return "";
-
-        int lowCount = 0;
-        int mediumCount = 0;
-        int highCount = 0;
-        int extremeCount = 0;
-
-        for (Weather event : events) {
-            String risk = event.getRiskLevel();
-            switch (risk) {
-                case "LOW": lowCount++; break;
-                case "MEDIUM": mediumCount++; break;
-                case "HIGH": highCount++; break;
-                case "EXTREME": extremeCount++; break;
-            }
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("LOW: ").append(lowCount).append("\n");
-        sb.append("MEDIUM: ").append(mediumCount).append("\n");
-        sb.append("HIGH: ").append(highCount).append("\n");
-        sb.append("EXTREME: ").append(extremeCount).append("\n");
-
-        return sb.toString();
-    }
-
-    public String getAnalysisSummary() {
-        if (events.isEmpty()) return "No events to analyze";
-
-        StringBuilder summary = new StringBuilder();
-        summary.append("Total Events: ").append(events.size()).append("\n\n");
-
-        summary.append("Events by Type:\n");
-        summary.append(getEventCountByTypeText());
-
-        summary.append("\nRisk Level Distribution:\n");
-        summary.append(getEventsByRiskLevelText());
-
-        return summary.toString();
-    }
-
-    // Get data for chart (without HashMaps)
-    public int[] getRiskLevelCounts() {
-        int[] counts = new int[4]; // LOW, MEDIUM, HIGH, EXTREME
-
-        for (Weather event : events) {
-            String risk = event.getRiskLevel();
-            switch (risk) {
-                case "LOW": counts[0]++; break;
-                case "MEDIUM": counts[1]++; break;
-                case "HIGH": counts[2]++; break;
-                case "EXTREME": counts[3]++; break;
-            }
-        }
-
         return counts;
     }
 
-    public ArrayList<Weather> getAllEvents() {
-        ArrayList<Weather> copy = new ArrayList<>();
+    //method to count events by risk
+    private int[] countEventsByRisk() {
+        int[] counts = new int[4]; // [Low, Medium, High, Extreme]
         for (Weather event : events) {
-            copy.add(event);
+            switch (event.getRiskLevel()) {
+                case LOW: counts[0]++; break;
+                case MEDIUM: counts[1]++; break;
+                case HIGH: counts[2]++; break;
+                case EXTREME: counts[3]++; break;
+            }
         }
-        return copy;
+        return counts;
     }
 
-    public int getTotalEvents() {
-        return events.size();
+    // Statistics and analyses
+    public String getStatistics() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\t\tWEATHER EVENT STATISTICS\n\n");
+
+        if (events.isEmpty()) {
+            sb.append("No events to analyze.\n");
+            return sb.toString();
+        }
+
+        sb.append("Total Events: ").append(events.size()).append("\n\n");
+
+        // will display count of event based on type
+        int[] typeCounts = countEventsByType();
+        sb.append("Events by Type:\n");
+        sb.append("Floods: ").append(typeCounts[0]).append("\n");
+        sb.append("Earthquakes: ").append(typeCounts[1]).append("\n");
+        sb.append("Wildfires: ").append(typeCounts[2]).append("\n");
+        sb.append("Hurricanes: ").append(typeCounts[3]).append("\n\n");
+
+        //will display count of event based on type
+        int[] riskCounts = countEventsByRisk();
+        sb.append("Events by Risk Level:\n");
+        sb.append("Low: ").append(riskCounts[0]).append("\n");
+        sb.append("Medium: ").append(riskCounts[1]).append("\n");
+        sb.append("High: ").append(riskCounts[2]).append("\n");
+        sb.append("Extreme: ").append(riskCounts[3]).append("\n\n");
+
+        // Find High risk locations : one whose risk level could be high or extreme
+        sb.append("High Risk Locations:\n");
+        HashMap<String, Integer> highRisk = new HashMap<>();
+        for (Weather event : events) {
+            if (event.getRiskLevel() == RiskLevel.HIGH ||
+                    event.getRiskLevel() == RiskLevel.EXTREME) {
+                String loc = event.getLocation();
+                highRisk.put(loc, highRisk.getOrDefault(loc, 0) + 1);
+            }
+        }
+
+        if (highRisk.isEmpty()) {
+            sb.append("No high-risk events.\n\n");
+        } else {
+            for (Map.Entry<String, Integer> entry : highRisk.entrySet()) {
+                sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(" events\n");
+            }
+            sb.append("\n");
+        }
+
+        // All event details- call the toString
+        sb.append("\t\tALL EVENT DETAILS\n\n");
+        for (Weather event : events) {
+            sb.append(event.toString()).append("\n\n");
+        }
+
+        return sb.toString();
+    }
+
+    // Frequency analysis - focuses on location frequency only
+    public String analyzeFrequency() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\t\tFREQUENCY ANALYSIS\n\n");
+
+        if (events.isEmpty()) {
+            sb.append("No events to analyze.\n");
+            return sb.toString();
+        }
+
+        sb.append("Total Events: ").append(events.size()).append("\n\n");
+
+        // location frequency
+        sb.append("Event Frequency by Location:\n");
+        HashMap<String, Integer> locationCount = new HashMap<>();
+
+        for (Weather event : events) {
+            String loc = event.getLocation();
+            locationCount.put(loc, locationCount.getOrDefault(loc, 0) + 1);
+        }
+
+        // Show locations with multiple events
+        boolean hasMultiple = false;
+        for (Map.Entry<String, Integer> entry : locationCount.entrySet()) {
+            if (entry.getValue() > 1) {
+                sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(" events (repeated)\n");
+                hasMultiple = true;
+            } else {
+                sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(" event\n");
+            }
+        }
+
+        if (!hasMultiple) {
+            sb.append("\nNote: No locations have repeated events yet.\n");
+        }
+
+        return sb.toString();
+    }
+
+    // Prediction
+    public String getPrediction() {
+        if (events.isEmpty()) {
+            return "Add events to get predictions.\n";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\t\tPREDICTION\n\n");
+        int[] typeCounts = countEventsByType();
+
+        // Find most common type
+        int maxIndex = 0;
+        for (int i = 1; i < 4; i++) {
+            if (typeCounts[i] > typeCounts[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+
+        String[] typeNames = {"Flood", "Earthquake", "Wildfire", "Hurricane"};
+        String predictedType = typeNames[maxIndex];
+        int maxCount = typeCounts[maxIndex];
+
+        sb.append("Based on ").append(events.size()).append(" past events:\n\n");
+        sb.append("Most Likely Next Event: ").append(predictedType).append("\n");
+        sb.append("Reason: ").append(maxCount).append(" of ").append(events.size())
+                .append(" past events were ").append(predictedType).append("s\n\n");
+
+        sb.append("Preparation Advice:\n");
+        switch (predictedType) {
+            case "Flood":
+                sb.append("- Prepare sandbags and water pumps\n");
+                sb.append("- Check and clear drainage systems\n");
+                break;
+            case "Earthquake":
+                sb.append("- Secure heavy furniture and appliances\n");
+                sb.append("- Practice drop, cover, and hold drills\n");
+                break;
+            case "Wildfire":
+                sb.append("- Clear dry vegetation around properties\n");
+                break;
+            case "Hurricane":
+                sb.append("- Reinforce windows and doors\n");
+                sb.append("- Stock emergency supplies for 3+ days\n");
+                break;
+        }
+
+        return sb.toString();
     }
 }
