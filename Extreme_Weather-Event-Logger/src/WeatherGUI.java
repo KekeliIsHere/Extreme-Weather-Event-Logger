@@ -180,31 +180,18 @@ public class WeatherGUI extends JFrame {
         }
     }
 // for coloring the cell based on risklevel
-   public  static class RiskRenderer extends DefaultTableCellRenderer {
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-
-            Component c = super.getTableCellRendererComponent(table, value,
-                    isSelected, hasFocus, row, column);
-
-            if (value instanceof RiskLevel risk) {
-            
-                switch (risk) {
-                    case LOW:
-                        c.setBackground(Color.GREEN.brighter());
-                        break;
-                    case MEDIUM:
-                        c.setBackground(Color.YELLOW);
-                        break;
-                    case HIGH:
-                        c.setBackground(Color.ORANGE);
-                        break;
-                    case EXTREME:
-                        c.setBackground(Color.RED);
-                        break;
-                }
-            }
-            return c;
-        }
+  public static class RiskRenderer extends DefaultTableCellRenderer {
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (value instanceof RiskLevel risk)
+            c.setBackground(switch(risk) {
+                case LOW -> Color.GREEN.brighter();
+                case MEDIUM -> Color.YELLOW;
+                case HIGH -> Color.ORANGE;
+                case EXTREME -> Color.RED;
+            });
+        return c;
     }
+}
 }
